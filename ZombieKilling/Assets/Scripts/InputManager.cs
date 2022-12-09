@@ -1,7 +1,11 @@
+using System;
 using UnityEngine;
 
 public class InputManager : MonoBehaviour
 {
+    public Action<Vector3> OnLocomotionInputUpdated;
+    public Action OnJumpInput;
+
     public Vector3 LocomotionInputValues => _locomotionInputValues;
 
     private Vector3 _locomotionInputValues;
@@ -53,6 +57,12 @@ public class InputManager : MonoBehaviour
             _locomotionInputValues.x = _horizontalInputValue;
             _locomotionInputValues.z = _verticalInputValue;
             _locomotionInputValues = Vector3.ClampMagnitude(_locomotionInputValues, 1f);
+            OnLocomotionInputUpdated?.Invoke(_locomotionInputValues);
+        }
+
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            OnJumpInput?.Invoke();
         }
     }
 }
