@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class CharacterMotor : MonoBehaviour
@@ -9,8 +10,10 @@ public class CharacterMotor : MonoBehaviour
     [SerializeField] private float _jumpToApexTime;
     [SerializeField] private LayerMask _groundLayer;
 
+    public Action<bool> OnGroundedStatusChanged;
+
     private float _gravity, _jumpForce, _velocityY;
-    private bool _isGrounded;
+    private bool _isGrounded = true;
 
     private void Start()
     {
@@ -33,15 +36,13 @@ public class CharacterMotor : MonoBehaviour
 
     private bool IsGrounded()
     {
+        bool wasGrounded = _isGrounded;
         _isGrounded = false;
-        if (_rigidbody.velocity.y > -0.001f && _rigidbody.velocity.y <= 0f)
-        {
-            _isGrounded = true;
-        }
         if (_velocityY < 0f && Physics.Raycast(transform.position + Vector3.up * 0.01f, Vector3.down, out RaycastHit hit, 0.2f, _groundLayer))
         {
             _isGrounded = true;
         }
+        if (wasGrounded != _isGrounded) OnGroundedStatusChanged?.Invoke(_isGrounded);
         if (_isGrounded) _rigidbody.angularVelocity = Vector3.zero;
         return _isGrounded;
     }
