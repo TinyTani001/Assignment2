@@ -3,9 +3,9 @@ using UnityEngine;
 
 public class CharacterMotor : MonoBehaviour
 {
-    [SerializeField] private InputManager _inputManager;
     [SerializeField] private Rigidbody _rigidbody;
-    [SerializeField] private float _moveSpeed;
+    [SerializeField] private float _walkSpeed;
+    [SerializeField] private float _runSpeed;
     [SerializeField] private float _jumpHeight;
     [SerializeField] private float _jumpToApexTime;
     [SerializeField] private LayerMask _groundLayer;
@@ -13,25 +13,33 @@ public class CharacterMotor : MonoBehaviour
     public Action<bool> OnGroundedStatusChanged;
 
     private float _gravity, _jumpForce, _velocityY;
-    private bool _isGrounded = true;
+    private bool _isGrounded = true, _walking;
+    private Vector3 _moveDirection;
 
     private void Start()
     {
         _gravity = -(2f * _jumpHeight) / Mathf.Pow(_jumpToApexTime, 2f);
         _jumpForce = Mathf.Abs(_gravity) * _jumpToApexTime;
-        _inputManager.OnJumpInput += () => { if (_isGrounded) _velocityY = _jumpForce; };
+        _moveDirection = Vector3.zero;
     }
 
     private void FixedUpdate()
     {
-        ReadLocomotionInput();
+        _velocityY += _gravity * Time.fixedDeltaTime;
+        _rigidbody.velocity = (_moveDirection * (_walking ? _walkSpeed : _runSpeed) * Time.deltaTime) + Vector3.up * _velocityY;
+        if (IsGrounded()) _velocityY = 0f;
+        _moveDirection = Vector3.zero;
     }
 
-    private void ReadLocomotionInput()
+    public void Move(Vector3 direction, bool walking = true)
     {
-        _velocityY += _gravity * Time.fixedDeltaTime;
-        _rigidbody.velocity = (_inputManager.LocomotionInputValues * _moveSpeed * Time.deltaTime) + Vector3.up * _velocityY;
-        if (IsGrounded()) _velocityY = 0f;
+        _moveDirection = direction;
+        _walking = walking;
+    }
+
+    public void Jump()
+    {
+        if (_isGrounded) _velocityY = _jumpForce;
     }
 
     private bool IsGrounded()
