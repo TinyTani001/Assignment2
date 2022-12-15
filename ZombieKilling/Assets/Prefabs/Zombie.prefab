@@ -99,6 +99,8 @@ MonoBehaviour:
   _zombieAnimator: {fileID: 7030446873629311800}
   _walkSpeed: 0.8
   _runSpeed: 0
+  _patrolDestinationRadius: 10
+  _minMaxPatrolRerouteTime: {x: 4, y: 10}
 --- !u!114 &7030446873629311800
 MonoBehaviour:
   m_ObjectHideFlags: 0
