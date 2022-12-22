@@ -11,6 +11,10 @@ PrefabInstance:
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 2100000, guid: 147d48dc29da51b498cb01e14bb782c5, type: 2}
+    - target: {fileID: 6032555765882042108, guid: 890017b639538ce4f840a6314527bd24, type: 3}
+      propertyPath: _animationEventReceiver
+      value: 
+      objectReference: {fileID: 2064060204397917509}
     - target: {fileID: 6498926371268972975, guid: 890017b639538ce4f840a6314527bd24, type: 3}
       propertyPath: _inputManager
       value: 
@@ -111,18 +115,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _inputManager: {fileID: 2330154849142227191}
   _characterMotor: {fileID: 82567682849567355}
---- !u!114 &2330154849142227191
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3607037836724762564}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 45022d1c546a5204594b8352b1dfd872, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &2064060204397917509
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -138,6 +130,18 @@ MonoBehaviour:
   _characterAnimator: {fileID: 6256006636346312477}
   _characterMotor: {fileID: 82567682849567355}
   _inputManager: {fileID: 2330154849142227191}
+--- !u!114 &2330154849142227191
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3607037836724762564}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 45022d1c546a5204594b8352b1dfd872, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!95 &6256006636346312477 stripped
 Animator:
   m_CorrespondingSourceObject: {fileID: 4535083270790979848, guid: 890017b639538ce4f840a6314527bd24, type: 3}

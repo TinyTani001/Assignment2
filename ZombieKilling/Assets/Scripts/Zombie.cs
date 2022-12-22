@@ -11,10 +11,10 @@ public class Zombie : MonoBehaviour
     [SerializeField] private ZombieAnimator _zombieAnimator;
     [SerializeField] private float _walkSpeed, _runSpeed;
     [SerializeField] private float _patrolDestinationRadius;
-    [SerializeField] private Vector2 _minMaxPatrolRerouteTime;
+    [SerializeField] private Vector2 _minMaxRerouteTime;
     [SerializeField, Range(0f, 1f)] private float _playerDetectionRange = 0.2f;
 
-    private bool _playerFound;
+    private bool _playerFound, _chasingPlayer;
 
     private int _agentState;
     private float _playerDetectionDotProduct;
@@ -28,21 +28,19 @@ public class Zombie : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if(_playerFound)
+        if (_playerFound)
         {
             EvaluateAgentState();
 
             Vector3 zombiePosition = transform.position;
 
-            Vector3 flatPlayerPosition =  SingletonManager.Instance.Player.transform.position;
+            Vector3 flatPlayerPosition = SingletonManager.Instance.Player.transform.position;
             flatPlayerPosition.y = zombiePosition.y;
             Vector3 zombieToPlayerDirection = (flatPlayerPosition - zombiePosition).normalized;
-            Debug.DrawRay(transform.position, transform.forward, Color.red);
-            Debug.DrawRay(transform.position, zombieToPlayerDirection, Color.green);
             float dot = Vector3.Dot(transform.forward, zombieToPlayerDirection);
             if (dot >= _playerDetectionDotProduct && (zombiePosition - flatPlayerPosition).sqrMagnitude < _patrolDestinationRadius * _patrolDestinationRadius)
             {
-                Debug.Log("Player detected");
+                _chasingPlayer = true;
             }
         }
     }
@@ -72,15 +70,27 @@ public class Zombie : MonoBehaviour
     private void EvaluateAgentState()
     {
         int oldState = _agentState;
-        if (_navMeshAgent.velocity.sqrMagnitude < 0.0001f) _agentState = 0;
-        if (_navMeshAgent.velocity.sqrMagnitude > 0f) _agentState = 1;
-        if(oldState != _agentState) { _zombieAnimator.OnAgentStateUpdated(_agentState); }
+        if (!_chasingPlayer)
+        {
+            if (_navMeshAgent.velocity.sqrMagnitude < 0.0001f) _agentState = 0;
+            if (_navMeshAgent.velocity.sqrMagnitude > 0f) _agentState = 1;
+        }
+        else
+        {
+            if (_navMeshAgent.velocity.sqrMagnitude < 0.0001f) _agentState = 3;
+            if (_navMeshAgent.velocity.sqrMagnitude > 0f) _agentState = 2;
+        }
+        if (oldState != _agentState)
+        {
+            if (_agentState >= 2) _navMeshAgent.speed = _runSpeed;
+            _zombieAnimator.OnAgentStateUpdated(_agentState);
+        }
     }
 
     private bool GetRandomNavmeshDestination(out Vector3 destinationPoint)
     {
         Vector3 sourcePosition = transform.position + Random.insideUnitSphere * _patrolDestinationRadius;
-        if(NavMesh.SamplePosition(sourcePosition, out NavMeshHit hit, 2f, NavMesh.AllAreas))
+        if (NavMesh.SamplePosition(sourcePosition, out NavMeshHit hit, 2f, NavMesh.AllAreas))
         {
             destinationPoint = hit.position;
             return true;
@@ -96,21 +106,14 @@ public class Zombie : MonoBehaviour
             yield return null;
         }
         _playerFound = true;
-        //StartCoroutine(SetPatrolRoute());
+        StartCoroutine(SetZombieRoute());
     }
 
-    IEnumerator SetPatrolRoute()
+    IEnumerator SetZombieRoute()
     {
-        bool canStopSearching = false;
-        Vector3 patrolDestination = Vector3.zero;
-        while(!canStopSearching)
-        {
-            canStopSearching = GetRandomNavmeshDestination(out patrolDestination);
-            yield return null;
-        }
-        _navMeshAgent.SetDestination(patrolDestination);
-        float reRouteTime = Time.time + Random.Range(_minMaxPatrolRerouteTime.x, _minMaxPatrolRerouteTime.y);
-        yield return new WaitUntil(()=>Time.time > reRouteTime);
-        StartCoroutine(SetPatrolRoute());
+        _navMeshAgent.SetDestination(SingletonManager.Instance.Player.transform.position);
+        float reRouteTime = Time.time + (!_chasingPlayer ? Random.Range(_minMaxRerouteTime.x, _minMaxRerouteTime.y) : 1f);
+        yield return new WaitUntil(() => Time.time > reRouteTime);
+        StartCoroutine(SetZombieRoute());
     }
 }
