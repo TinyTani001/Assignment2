@@ -14,7 +14,7 @@ public class Zombie : MonoBehaviour
     [SerializeField] private Vector2 _minMaxRerouteTime;
     [SerializeField, Range(0f, 1f)] private float _playerDetectionRange = 0.2f;
 
-    private bool _playerFound, _chasingPlayer;
+    private bool _playerFound, _chasingPlayer, _playerInSight;
 
     private int _agentState;
     private float _playerDetectionDotProduct;
@@ -37,11 +37,17 @@ public class Zombie : MonoBehaviour
             Vector3 flatPlayerPosition = SingletonManager.Instance.Player.transform.position;
             flatPlayerPosition.y = zombiePosition.y;
             Vector3 zombieToPlayerDirection = (flatPlayerPosition - zombiePosition).normalized;
+            float playerZombieSqrdDistance = (zombiePosition - flatPlayerPosition).sqrMagnitude;
             float dot = Vector3.Dot(transform.forward, zombieToPlayerDirection);
-            if (dot >= _playerDetectionDotProduct && (zombiePosition - flatPlayerPosition).sqrMagnitude < _patrolDestinationRadius * _patrolDestinationRadius)
+            if (dot >= _playerDetectionDotProduct && playerZombieSqrdDistance < _patrolDestinationRadius * _patrolDestinationRadius)
             {
                 _chasingPlayer = true;
+                if (playerZombieSqrdDistance <= _navMeshAgent.stoppingDistance * _navMeshAgent.stoppingDistance)
+                {
+                    _playerInSight = true;
+                }
             }
+            else _playerInSight = false;
         }
     }
 
@@ -65,6 +71,12 @@ public class Zombie : MonoBehaviour
 
             lastPosition = nextPosition;
         }
+    }
+
+    public void OnHitConnected()
+    {
+        if (_playerInSight)
+            SingletonManager.Instance.Player.HitPlayer();
     }
 
     private void EvaluateAgentState()

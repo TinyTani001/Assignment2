@@ -129,7 +129,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _characterAnimator: {fileID: 6256006636346312477}
   _characterMotor: {fileID: 82567682849567355}
+  _player: {fileID: 307899000630664034}
   _inputManager: {fileID: 2330154849142227191}
+  _layerWeightShiftTime: 0.2
 --- !u!114 &2330154849142227191
 MonoBehaviour:
   m_ObjectHideFlags: 0

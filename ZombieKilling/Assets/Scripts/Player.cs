@@ -1,9 +1,12 @@
+using System;
 using UnityEngine;
 
 public class Player : MonoBehaviour
 {
     [SerializeField] private InputManager _inputManager;
     [SerializeField] private CharacterMotor _characterMotor;
+
+    public Action OnHitReceived;
 
     private void Start()
     {
@@ -14,5 +17,10 @@ public class Player : MonoBehaviour
     private void FixedUpdate()
     {
         _characterMotor.Move(_inputManager.LocomotionInputValues);
+    }
+
+    public void HitPlayer()
+    {
+        OnHitReceived.Invoke();
     }
 }
