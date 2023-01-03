@@ -115,6 +115,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _inputManager: {fileID: 2330154849142227191}
   _characterMotor: {fileID: 82567682849567355}
+  _playerData: {fileID: 11400000, guid: fd2a0ae5903cb494fab6dd4e9af9ca36, type: 2}
 --- !u!114 &2064060204397917509
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -132,6 +133,7 @@ MonoBehaviour:
   _player: {fileID: 307899000630664034}
   _inputManager: {fileID: 2330154849142227191}
   _layerWeightShiftTime: 0.2
+  _playerData: {fileID: 11400000, guid: fd2a0ae5903cb494fab6dd4e9af9ca36, type: 2}
 --- !u!114 &2330154849142227191
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -10,11 +10,12 @@ public class Zombie : MonoBehaviour
     [SerializeField] private NavMeshAgent _navMeshAgent;
     [SerializeField] private ZombieAnimator _zombieAnimator;
     [SerializeField] private float _walkSpeed, _runSpeed;
-    [SerializeField] private float _patrolDestinationRadius;
+    [SerializeField] private float _patrolDestinationRadius, _timeToHoldPositionAfterKillingPlayer;
     [SerializeField] private Vector2 _minMaxRerouteTime;
     [SerializeField, Range(0f, 1f)] private float _playerDetectionRange = 0.2f;
+    [SerializeField] private PlayerDataSO _playerData;
 
-    private bool _playerFound, _chasingPlayer, _playerInSight;
+    private bool _playerFound, _chasingPlayer, _playerInSight, _weKilledPlayer;
 
     private int _agentState;
     private float _playerDetectionDotProduct;
@@ -32,9 +33,11 @@ public class Zombie : MonoBehaviour
         {
             EvaluateAgentState();
 
+            if(_playerData.IsPlayerDead) return;
+
             Vector3 zombiePosition = transform.position;
 
-            Vector3 flatPlayerPosition = SingletonManager.Instance.Player.transform.position;
+            Vector3 flatPlayerPosition = _playerData.Player.transform.position;
             flatPlayerPosition.y = zombiePosition.y;
             Vector3 zombieToPlayerDirection = (flatPlayerPosition - zombiePosition).normalized;
             float playerZombieSqrdDistance = (zombiePosition - flatPlayerPosition).sqrMagnitude;
@@ -76,7 +79,10 @@ public class Zombie : MonoBehaviour
     public void OnHitConnected()
     {
         if (_playerInSight)
-            SingletonManager.Instance.Player.HitPlayer();
+        {
+            _playerData.Player.HitPlayer();
+            if (_playerData.CurrentPlayerHealth == 0) _weKilledPlayer = true;
+        }
     }
 
     private void EvaluateAgentState()
@@ -95,11 +101,12 @@ public class Zombie : MonoBehaviour
         if (oldState != _agentState)
         {
             if (_agentState >= 2) _navMeshAgent.speed = _runSpeed;
+            else _navMeshAgent.speed = _walkSpeed;
             _zombieAnimator.OnAgentStateUpdated(_agentState);
         }
     }
 
-    private bool GetRandomNavmeshDestination(out Vector3 destinationPoint)
+    private bool GetRandomNavmeshDestination(ref Vector3 destinationPoint)
     {
         Vector3 sourcePosition = transform.position + Random.insideUnitSphere * _patrolDestinationRadius;
         if (NavMesh.SamplePosition(sourcePosition, out NavMeshHit hit, 2f, NavMesh.AllAreas))
@@ -113,19 +120,37 @@ public class Zombie : MonoBehaviour
 
     IEnumerator DetectPlayer()
     {
-        while (SingletonManager.Instance.Player == null)
+        while (_playerData.Player == null)
         {
             yield return null;
         }
         _playerFound = true;
-        StartCoroutine(SetZombieRoute());
+        StartCoroutine(GotoPlayer());
     }
 
-    IEnumerator SetZombieRoute()
+    IEnumerator GotoPlayer()
     {
-        _navMeshAgent.SetDestination(SingletonManager.Instance.Player.transform.position);
+        _navMeshAgent.SetDestination(_playerData.Player.transform.position);
         float reRouteTime = Time.time + (!_chasingPlayer ? Random.Range(_minMaxRerouteTime.x, _minMaxRerouteTime.y) : 1f);
+        yield return new WaitUntil(() => Time.time > reRouteTime || _playerData.IsPlayerDead);
+        if (_playerData.IsPlayerDead)
+        {
+            _chasingPlayer = false;
+            _playerInSight = false;
+            if (_weKilledPlayer) yield return new WaitForSeconds(_timeToHoldPositionAfterKillingPlayer);
+            StartCoroutine(TakeRandomPath());
+        }
+        else
+            StartCoroutine(GotoPlayer());
+    }
+
+    IEnumerator TakeRandomPath()
+    {
+        Vector3 destination = Vector3.zero;
+        while (!GetRandomNavmeshDestination(ref destination)) { yield return null; }
+        _navMeshAgent.SetDestination(destination);
+        float reRouteTime = Time.time + Random.Range(_minMaxRerouteTime.x, _minMaxRerouteTime.y);
         yield return new WaitUntil(() => Time.time > reRouteTime);
-        StartCoroutine(SetZombieRoute());
+        StartCoroutine(TakeRandomPath());
     }
 }

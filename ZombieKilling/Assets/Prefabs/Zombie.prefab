@@ -7,6 +7,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 4535083270786899912, guid: 890017b639538ce4f840a6314527bd24, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 5090a82fa553bdf47b6fafb41377ccc6, type: 2}
     - target: {fileID: 4535083270790979848, guid: 890017b639538ce4f840a6314527bd24, type: 3}
       propertyPath: m_Controller
       value: 
@@ -105,8 +109,10 @@ MonoBehaviour:
   _walkSpeed: 0.8
   _runSpeed: 5.5
   _patrolDestinationRadius: 20
+  _timeToHoldPositionAfterKillingPlayer: 5
   _minMaxRerouteTime: {x: 3, y: 7}
   _playerDetectionRange: 0.114
+  _playerData: {fileID: 11400000, guid: fd2a0ae5903cb494fab6dd4e9af9ca36, type: 2}
 --- !u!114 &7030446873629311800
 MonoBehaviour:
   m_ObjectHideFlags: 0

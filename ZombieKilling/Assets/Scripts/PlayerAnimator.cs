@@ -7,6 +7,7 @@ public class PlayerAnimator : AnimationEventReceiver
     [SerializeField] private Player _player;
     [SerializeField] private InputManager _inputManager;
     [SerializeField] private float _layerWeightShiftTime;
+    [SerializeField] private PlayerDataSO _playerData;
 
     private float _layerWeightShiftRefValue, _upperBodyLayerFinalWeight;
 
@@ -23,10 +24,12 @@ public class PlayerAnimator : AnimationEventReceiver
         {
             _characterAnimator.SetBool("Jump", !isGrounded);
         };
-        _player.OnHitReceived += () =>
+        _playerData.OnPlayerTookDamage += damageAmount =>
         {
-            _characterAnimator.SetBool("HitReaction", true);
+            if (!_playerData.IsPlayerDead)
+                _characterAnimator.SetBool("HitReaction", true);
         };
+        _playerData.OnPlayerDead += () => _characterAnimator.SetTrigger("Dead");
     }
 
     private void Update()
