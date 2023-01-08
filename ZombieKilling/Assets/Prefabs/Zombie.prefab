@@ -113,6 +113,7 @@ MonoBehaviour:
   _maxHealth: 100
   _minMaxRerouteTime: {x: 3, y: 7}
   _playerDetectionRange: 0.114
+  _zombieMeshTransform: {fileID: 5931261613551232961}
   _playerData: {fileID: 11400000, guid: fd2a0ae5903cb494fab6dd4e9af9ca36, type: 2}
 --- !u!114 &7030446873629311800
 MonoBehaviour:
@@ -182,5 +183,10 @@ NavMeshAgent:
 --- !u!95 &5931261613544261665 stripped
 Animator:
   m_CorrespondingSourceObject: {fileID: 4535083270790979848, guid: 890017b639538ce4f840a6314527bd24, type: 3}
+  m_PrefabInstance: {fileID: 7836203118456432937}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &5931261613551232961 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4535083270798757608, guid: 890017b639538ce4f840a6314527bd24, type: 3}
   m_PrefabInstance: {fileID: 7836203118456432937}
   m_PrefabAsset: {fileID: 0}

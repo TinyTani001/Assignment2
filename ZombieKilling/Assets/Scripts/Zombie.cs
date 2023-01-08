@@ -12,6 +12,7 @@ public class Zombie : MonoBehaviour
     [SerializeField] private int _maxHealth = 100;
     [SerializeField] private Vector2 _minMaxRerouteTime;
     [SerializeField, Range(0f, 1f)] private float _playerDetectionRange = 0.2f;
+    [SerializeField] private Transform _zombieMeshTransform;
     [SerializeField] private PlayerDataSO _playerData;
 
     private bool _playerFound, _chasingPlayer, _playerInSight, _weKilledPlayer, _isDead, _isHandlingBulletHit;
@@ -103,6 +104,7 @@ public class Zombie : MonoBehaviour
                 _isDead = true;
                 _zombieAnimator.OnDeath();
                 _navMeshAgent.speed = 0f;
+                StartCoroutine(ZombieFinisher());
             }
         }
         return _isDead;
@@ -191,5 +193,17 @@ public class Zombie : MonoBehaviour
         {
             StartCoroutine(TakeRandomPath());
         }
+    }
+
+    IEnumerator ZombieFinisher()
+    {
+        yield return new WaitForSeconds(3f);
+        Vector3 finalPosition = Vector3.down * 5f;
+        while ((finalPosition - _zombieMeshTransform.localPosition).sqrMagnitude > 0.001f)
+        {
+            yield return null;
+            _zombieMeshTransform.localPosition = Vector3.MoveTowards(_zombieMeshTransform.localPosition, finalPosition, Time.deltaTime);
+        }
+        Destroy(gameObject);
     }
 }
