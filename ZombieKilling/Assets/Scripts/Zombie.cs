@@ -14,6 +14,7 @@ public class Zombie : MonoBehaviour
     [SerializeField, Range(0f, 1f)] private float _playerDetectionRange = 0.2f;
     [SerializeField] private Transform _zombieMeshTransform;
     [SerializeField] private PlayerDataSO _playerData;
+    [SerializeField] private ZombieSpawnDataSO _zombieSpawnData;
 
     private bool _playerFound, _chasingPlayer, _playerInSight, _weKilledPlayer, _isDead, _isHandlingBulletHit;
 
@@ -198,6 +199,7 @@ public class Zombie : MonoBehaviour
     IEnumerator ZombieFinisher()
     {
         yield return new WaitForSeconds(3f);
+        _zombieSpawnData.RequestZombieSpawn();
         Vector3 finalPosition = Vector3.down * 5f;
         while ((finalPosition - _zombieMeshTransform.localPosition).sqrMagnitude > 0.001f)
         {

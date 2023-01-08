@@ -3,7 +3,7 @@ using UnityEngine;
 public class Bullet : MonoBehaviour
 {
     [SerializeField] private Rigidbody _rigidbody;
-    [SerializeField] private float _bulletLifeTime;
+    [SerializeField] private float _bulletLifeTime, _bulletSpeed;
 
     private void Start()
     {
@@ -12,7 +12,7 @@ public class Bullet : MonoBehaviour
 
     private void FixedUpdate()
     {
-        _rigidbody.MovePosition(transform.position + transform.forward * 16f * Time.fixedDeltaTime);
+        _rigidbody.MovePosition(transform.position + transform.forward * _bulletSpeed * Time.fixedDeltaTime);
     }
 
     private void Update()
