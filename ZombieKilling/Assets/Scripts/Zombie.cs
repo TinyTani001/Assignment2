@@ -18,7 +18,7 @@ public class Zombie : MonoBehaviour
 
     private int _agentState;
     private float _playerDetectionDotProduct;
-    private int _currentHealth;
+    private int _currentHealth, _runningHitReactionsCount;
 
     private void Start()
     {
@@ -91,6 +91,7 @@ public class Zombie : MonoBehaviour
         if (!_isDead)
         {
             _currentHealth -= damageAmount;
+            _runningHitReactionsCount++;
             if (_currentHealth > 0)
             {
                 _zombieAnimator.HitReceived();
@@ -109,8 +110,12 @@ public class Zombie : MonoBehaviour
 
     public void OnHitReactionCompleted()
     {
-        _navMeshAgent.speed = _agentState >= 2 ? _runSpeed : _walkSpeed;
-        _isHandlingBulletHit = false;
+        _runningHitReactionsCount--;
+        if (_runningHitReactionsCount == 0)
+        {
+            _navMeshAgent.speed = _agentState >= 2 ? _runSpeed : _walkSpeed;
+            _isHandlingBulletHit = false;
+        }
     }
 
     private void EvaluateAgentState()
