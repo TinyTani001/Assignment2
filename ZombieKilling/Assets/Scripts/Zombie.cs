@@ -1,8 +1,6 @@
 using System.Collections;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.AI;
-using UnityEngine.EventSystems;
 
 public class Zombie : MonoBehaviour
 {
@@ -11,29 +9,32 @@ public class Zombie : MonoBehaviour
     [SerializeField] private ZombieAnimator _zombieAnimator;
     [SerializeField] private float _walkSpeed, _runSpeed;
     [SerializeField] private float _patrolDestinationRadius, _timeToHoldPositionAfterKillingPlayer;
+    [SerializeField] private int _maxHealth = 100;
     [SerializeField] private Vector2 _minMaxRerouteTime;
     [SerializeField, Range(0f, 1f)] private float _playerDetectionRange = 0.2f;
     [SerializeField] private PlayerDataSO _playerData;
 
-    private bool _playerFound, _chasingPlayer, _playerInSight, _weKilledPlayer;
+    private bool _playerFound, _chasingPlayer, _playerInSight, _weKilledPlayer, _isDead, _isHandlingBulletHit;
 
     private int _agentState;
     private float _playerDetectionDotProduct;
+    private int _currentHealth;
 
     private void Start()
     {
         StartCoroutine(DetectPlayer());
+        _currentHealth = _maxHealth;
         _navMeshAgent.speed = _walkSpeed;
         _playerDetectionDotProduct = Vector3.Dot(transform.forward, Quaternion.AngleAxis(Mathf.Lerp(0f, 180f, _playerDetectionRange), Vector3.up) * transform.forward);
     }
 
     private void FixedUpdate()
     {
-        if (_playerFound)
+        if (_playerFound && !_isDead && !_isHandlingBulletHit)
         {
             EvaluateAgentState();
 
-            if(_playerData.IsPlayerDead) return;
+            if (_playerData.IsPlayerDead) return;
 
             Vector3 zombiePosition = transform.position;
 
@@ -85,6 +86,33 @@ public class Zombie : MonoBehaviour
         }
     }
 
+    public bool HitZombie(int damageAmount)
+    {
+        if (!_isDead)
+        {
+            _currentHealth -= damageAmount;
+            if (_currentHealth > 0)
+            {
+                _zombieAnimator.HitReceived();
+                _navMeshAgent.speed = 0f;
+                _isHandlingBulletHit = true;
+            }
+            else
+            {
+                _isDead = true;
+                _zombieAnimator.OnDeath();
+                _navMeshAgent.speed = 0f;
+            }
+        }
+        return _isDead;
+    }
+
+    public void OnHitReactionCompleted()
+    {
+        _navMeshAgent.speed = _agentState >= 2 ? _runSpeed : _walkSpeed;
+        _isHandlingBulletHit = false;
+    }
+
     private void EvaluateAgentState()
     {
         int oldState = _agentState;
@@ -132,16 +160,19 @@ public class Zombie : MonoBehaviour
     {
         _navMeshAgent.SetDestination(_playerData.Player.transform.position);
         float reRouteTime = Time.time + (!_chasingPlayer ? Random.Range(_minMaxRerouteTime.x, _minMaxRerouteTime.y) : 1f);
-        yield return new WaitUntil(() => Time.time > reRouteTime || _playerData.IsPlayerDead);
-        if (_playerData.IsPlayerDead)
+        yield return new WaitUntil(() => (Time.time > reRouteTime || _playerData.IsPlayerDead || _isDead) && !_isHandlingBulletHit);
+        if (!_isDead)
         {
-            _chasingPlayer = false;
-            _playerInSight = false;
-            if (_weKilledPlayer) yield return new WaitForSeconds(_timeToHoldPositionAfterKillingPlayer);
-            StartCoroutine(TakeRandomPath());
+            if (_playerData.IsPlayerDead)
+            {
+                _chasingPlayer = false;
+                _playerInSight = false;
+                if (_weKilledPlayer) yield return new WaitForSeconds(_timeToHoldPositionAfterKillingPlayer);
+                StartCoroutine(TakeRandomPath());
+            }
+            else
+                StartCoroutine(GotoPlayer());
         }
-        else
-            StartCoroutine(GotoPlayer());
     }
 
     IEnumerator TakeRandomPath()
@@ -150,7 +181,10 @@ public class Zombie : MonoBehaviour
         while (!GetRandomNavmeshDestination(ref destination)) { yield return null; }
         _navMeshAgent.SetDestination(destination);
         float reRouteTime = Time.time + Random.Range(_minMaxRerouteTime.x, _minMaxRerouteTime.y);
-        yield return new WaitUntil(() => Time.time > reRouteTime);
-        StartCoroutine(TakeRandomPath());
+        yield return new WaitUntil(() => Time.time > reRouteTime || _isDead);
+        if (!_isDead)
+        {
+            StartCoroutine(TakeRandomPath());
+        }
     }
 }

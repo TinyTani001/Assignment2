@@ -5,6 +5,8 @@ using UnityEngine;
 public class PlayerDataSO : ScriptableObject
 {
     [SerializeField, Min(0)] private int _playerHealth = 100;
+    [SerializeField, Min(0f)] private float _baseFireRate = 0.6f;
+    [SerializeField, Min(0)] private int _baseBulletDamage = 25;
 
     public Action OnPlayerDead;
     public Action<int> OnPlayerTookDamage;
@@ -15,9 +17,15 @@ public class PlayerDataSO : ScriptableObject
 
     public int CurrentPlayerHealth { get; private set; }
 
+    public float FireRate { get; private set; }
+
+    public int BulletDamage { get; private set; }
+
     public void InitializeData()
     {
         CurrentPlayerHealth = _playerHealth;
+        FireRate = _baseFireRate;
+        BulletDamage = _baseBulletDamage;
     }
 
     public void DamagePlayer(int damageAmount)

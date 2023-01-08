@@ -4,7 +4,7 @@ using UnityEngine.Events;
 public class ZombieAnimator : AnimationEventReceiver
 {
     [SerializeField] private Animator _animator;
-    [SerializeField] private UnityEvent _onHitConnected;
+    [SerializeField] private UnityEvent _onHitConnected, _onHitReactionCompleted;
 
     public void OnAgentStateUpdated(int stateIndex)
     {
@@ -48,6 +48,9 @@ public class ZombieAnimator : AnimationEventReceiver
             case "HitCompleted":
                 RandomizeHitAnimation();
                 break;
+            case "HitReactionCompleted":
+                _onHitReactionCompleted.Invoke();
+                break;
         }
     }
 
@@ -74,5 +77,15 @@ public class ZombieAnimator : AnimationEventReceiver
     private void SetHitAnimationVariation(int toValue)
     {
         _animator.SetInteger("AttackVariation", toValue);
+    }
+
+    public void HitReceived()
+    {
+        _animator.SetTrigger("Hit");
+    }
+
+    public void OnDeath()
+    {
+        _animator.SetTrigger("Dead");
     }
 }
