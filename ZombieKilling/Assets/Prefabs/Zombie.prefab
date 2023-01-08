@@ -103,12 +103,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 25670348a23b85a4faef7d3d4ec495a0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _showDebugGizmos: 0
+  _showDebugGizmos: 1
   _navMeshAgent: {fileID: 7190099944575032616}
   _zombieAnimator: {fileID: 7030446873629311800}
-  _walkSpeed: 0.8
-  _runSpeed: 5.5
-  _patrolDestinationRadius: 20
+  _walkSpeed: 0.08
+  _runSpeed: 0.55
+  _patrolDestinationRadius: 2
   _timeToHoldPositionAfterKillingPlayer: 5
   _maxHealth: 100
   _minMaxRerouteTime: {x: 3, y: 7}
@@ -171,7 +171,7 @@ NavMeshAgent:
   m_Acceleration: 20
   avoidancePriority: 50
   m_AngularSpeed: 500
-  m_StoppingDistance: 2.5
+  m_StoppingDistance: 0.25
   m_AutoTraverseOffMeshLink: 1
   m_AutoBraking: 1
   m_AutoRepath: 1
