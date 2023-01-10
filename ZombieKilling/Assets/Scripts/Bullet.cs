@@ -25,7 +25,7 @@ public class Bullet : MonoBehaviour
 
     private void OnTriggerEnter(Collider coll)
     {
-        if (coll.gameObject.layer == LayerMask.NameToLayer("Character"))
+        if (coll.gameObject.layer == LayerMask.NameToLayer("Zombie"))
         {
             if (coll.gameObject.TryGetComponent(out Zombie zombie))
             {

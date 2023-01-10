@@ -7,7 +7,7 @@ public class ZombieSpawnDataSO : ScriptableObject
 {
     public GameObject ZombiePrefab;
 
-    public Action OnZombieSpawnRequest;
+    public Action<Vector3> OnZombieSpawnRequest;
 
     private Queue<ZombieSpawnPoint> _zombieSpawnPoints;
 
@@ -23,9 +23,9 @@ public class ZombieSpawnDataSO : ScriptableObject
         _zombieSpawnPoints.Enqueue(point);
     }
 
-    public void RequestZombieSpawn()
+    public void RequestZombieSpawn(Vector3 deathPosition)
     {
-        OnZombieSpawnRequest?.Invoke();
+        OnZombieSpawnRequest?.Invoke(deathPosition);
         ZombieSpawnPoint spawnPoint = _zombieSpawnPoints.Dequeue();
         spawnPoint.OnZombieSpawnRequest();
         _zombieSpawnPoints.Enqueue(spawnPoint);

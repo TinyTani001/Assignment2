@@ -198,7 +198,7 @@ public class Zombie : MonoBehaviour
 
     IEnumerator ZombieFinisher()
     {
-        _zombieSpawnData.RequestZombieSpawn();
+        _zombieSpawnData.RequestZombieSpawn(transform.position);
         yield return new WaitForSeconds(3f);
         Vector3 finalPosition = Vector3.down * 5f;
         while ((finalPosition - _zombieMeshTransform.localPosition).sqrMagnitude > 0.001f)
