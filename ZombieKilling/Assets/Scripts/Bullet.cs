@@ -4,6 +4,7 @@ public class Bullet : MonoBehaviour
 {
     [SerializeField] private Rigidbody _rigidbody;
     [SerializeField] private float _bulletLifeTime, _bulletSpeed;
+    [SerializeField] private PlayerDataSO _playerData;
 
     private void Start()
     {
@@ -29,7 +30,7 @@ public class Bullet : MonoBehaviour
         {
             if (coll.gameObject.TryGetComponent(out Zombie zombie))
             {
-                if(!zombie.HitZombie(20)) Destroy(gameObject);
+                if(!zombie.HitZombie(_playerData.BulletDamage)) Destroy(gameObject);
             }
         }
     }

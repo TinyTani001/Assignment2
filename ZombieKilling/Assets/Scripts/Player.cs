@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using UnityEngine;
 
 public class Player : MonoBehaviour
@@ -21,6 +22,7 @@ public class Player : MonoBehaviour
         _inputManager.OnJumpInput += _characterMotor.Jump;
         _playerData.Player = this;
         _bulletFireTime = Time.time + _playerData.FireRate;
+        StartCoroutine(InitializePlayerStatUI());
     }
 
     private void FixedUpdate()
@@ -57,5 +59,13 @@ public class Player : MonoBehaviour
     {
         if (_playerData.IsPlayerDead) return;
         _playerData.DamagePlayer(30);
+    }
+
+    IEnumerator InitializePlayerStatUI()
+    {
+        yield return new WaitUntil(()=>_playerData.GameUIData.OnHealthUpdated != null);
+        _playerData.GameUIData.OnHealthUpdated.Invoke(_playerData.CurrentPlayerHealth);
+        _playerData.GameUIData.OnDamageUpdated.Invoke(_playerData.BulletDamage);
+        _playerData.GameUIData.OnFireRateUpdated.Invoke(_playerData.FireRate);
     }
 }

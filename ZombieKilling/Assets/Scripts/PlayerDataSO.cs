@@ -7,6 +7,7 @@ public class PlayerDataSO : ScriptableObject
     [SerializeField, Min(0)] private int _playerHealth = 100;
     [SerializeField, Min(0f)] private float _baseFireRate = 0.6f;
     [SerializeField, Min(0)] private int _baseBulletDamage = 25;
+    [SerializeField] private GameUIDataSO _gameUIData;
 
     public Action OnPlayerDead;
     public Action<int> OnPlayerTookDamage;
@@ -22,6 +23,8 @@ public class PlayerDataSO : ScriptableObject
     public int BulletDamage { get; private set; }
 
     public Vector3 LocomotionAnimationDirection { get; private set; }
+
+    public GameUIDataSO GameUIData => _gameUIData;
 
     public void InitializeData()
     {
@@ -41,9 +44,30 @@ public class PlayerDataSO : ScriptableObject
         }
         else
             OnPlayerTookDamage?.Invoke(CurrentPlayerHealth);
+        _gameUIData.OnHealthUpdated?.Invoke(CurrentPlayerHealth);
     }
 
     public void SetLocomotionAnimationDirection(Vector3 toDirection) => LocomotionAnimationDirection = toDirection;
+
+    public void SetFireRate(float fireRate)
+    {
+        FireRate = fireRate;
+        _gameUIData.OnFireRateUpdated?.Invoke(FireRate);
+    }
+
+    public void SetBulletDamage(int damage)
+    {
+        BulletDamage = damage;
+        _gameUIData.OnDamageUpdated?.Invoke(BulletDamage);
+    }
+
+    public void ResetUpgradables()
+    {
+        FireRate = _baseFireRate;
+        BulletDamage = _baseBulletDamage;
+        _gameUIData.OnFireRateUpdated?.Invoke(FireRate);
+        _gameUIData.OnDamageUpdated?.Invoke(BulletDamage);
+    }
 
     public void ResetData()
     {

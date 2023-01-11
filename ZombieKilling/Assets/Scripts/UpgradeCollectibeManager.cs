@@ -8,16 +8,24 @@ public class UpgradeCollectibeManager : MonoBehaviour
 
     private int _currentZombieKillsToUpgrade;
 
+    private void Awake()
+    {
+        _upgradeCollectibeData.AssignResources();
+    }
+
     private void Start()
     {
         _zombieSpawnData.OnZombieSpawnRequest += deathPosition =>
         {
-            _currentZombieKillsToUpgrade++;
-            _upgradeCollectibeData.OnZombieKillPercentUpdated?.Invoke(Mathf.InverseLerp(0f, _upgradeCollectibeData.ZombieKillsToUpgrade, _currentZombieKillsToUpgrade));
-            if (_currentZombieKillsToUpgrade == _upgradeCollectibeData.ZombieKillsToUpgrade)
+            if (_upgradeCollectibeData.CanDropUpgradeCollectible)
             {
-                _currentZombieKillsToUpgrade = 0;
-                Instantiate(_upgradeCollectiblePrefab, deathPosition + Vector3.up * 0.1f, Quaternion.identity);
+                _currentZombieKillsToUpgrade++;
+                _upgradeCollectibeData.OnZombieKillPercentUpdated?.Invoke(Mathf.InverseLerp(0f, _upgradeCollectibeData.ZombieKillsToUpgrade, _currentZombieKillsToUpgrade));
+                if (_currentZombieKillsToUpgrade == _upgradeCollectibeData.ZombieKillsToUpgrade)
+                {
+                    _currentZombieKillsToUpgrade = 0;
+                    Instantiate(_upgradeCollectiblePrefab, deathPosition + Vector3.up * 0.1f, Quaternion.identity);
+                }
             }
         };
     }
