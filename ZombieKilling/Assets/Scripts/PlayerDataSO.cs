@@ -21,6 +21,8 @@ public class PlayerDataSO : ScriptableObject
 
     public int BulletDamage { get; private set; }
 
+    public Vector3 LocomotionAnimationDirection { get; private set; }
+
     public void InitializeData()
     {
         CurrentPlayerHealth = _playerHealth;
@@ -41,11 +43,14 @@ public class PlayerDataSO : ScriptableObject
             OnPlayerTookDamage?.Invoke(CurrentPlayerHealth);
     }
 
+    public void SetLocomotionAnimationDirection(Vector3 toDirection) => LocomotionAnimationDirection = toDirection;
+
     public void ResetData()
     {
         OnPlayerDead = null;
         OnPlayerTookDamage = null;
         IsPlayerDead = false;
         Player = null;
+        LocomotionAnimationDirection = Vector3.zero;
     }
 }

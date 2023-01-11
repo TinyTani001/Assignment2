@@ -5482,7 +5482,6 @@ MonoBehaviour:
   _upgradeCollectibeData: {fileID: 11400000, guid: c23f6e3b0ccd42c4f8e8bfd307daa741, type: 2}
   _upgradeCollectiblePrefab: {fileID: 2673429023840459459, guid: 3a614fa582a182c4497490eb91186899, type: 3}
   _zombieSpawnData: {fileID: 11400000, guid: 8aecd3d84c8b59e4ca9d54c03e201a34, type: 2}
-  _zombieKillsToUpgrade: 3
 --- !u!4 &796753142
 Transform:
   m_ObjectHideFlags: 0

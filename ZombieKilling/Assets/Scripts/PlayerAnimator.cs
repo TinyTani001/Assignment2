@@ -15,8 +15,6 @@ public class PlayerAnimator : AnimationEventReceiver
     {
         _inputManager.OnLocomotionInputUpdated += inputValue =>
         {
-            _characterAnimator.SetFloat("HorizontalInput", inputValue.x);
-            _characterAnimator.SetFloat("VerticalInput", inputValue.z);
             _upperBodyLayerFinalWeight = inputValue.sqrMagnitude > 0f ? 1f : 0f;
             _layerWeightShiftRefValue = 0f;
         };
@@ -37,6 +35,8 @@ public class PlayerAnimator : AnimationEventReceiver
         float upperBodyCurrentLayerWeight = Mathf.SmoothDamp(_characterAnimator.GetLayerWeight(1), _upperBodyLayerFinalWeight, ref _layerWeightShiftRefValue, _layerWeightShiftTime);
         _characterAnimator.SetLayerWeight(1, upperBodyCurrentLayerWeight);
         _characterAnimator.SetLayerWeight(2, Mathf.InverseLerp(1f, 0f, upperBodyCurrentLayerWeight));
+        _characterAnimator.SetFloat("HorizontalInput", _playerData.LocomotionAnimationDirection.x);
+        _characterAnimator.SetFloat("VerticalInput", _playerData.LocomotionAnimationDirection.z);
     }
 
     public override void OnAnimEvent(string eventID)
