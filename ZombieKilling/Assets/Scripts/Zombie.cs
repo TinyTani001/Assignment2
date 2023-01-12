@@ -15,6 +15,8 @@ public class Zombie : MonoBehaviour
     [SerializeField] private Transform _zombieMeshTransform;
     [SerializeField] private PlayerDataSO _playerData;
     [SerializeField] private ZombieSpawnDataSO _zombieSpawnData;
+    [SerializeField] private AudioClip _zombieDeathAudioClip;
+    [SerializeField] private AudioSource _zombieAudioSource;
 
     private bool _playerFound, _chasingPlayer, _playerInSight, _weKilledPlayer, _isDead, _isHandlingBulletHit;
 
@@ -105,6 +107,8 @@ public class Zombie : MonoBehaviour
                 _isDead = true;
                 _zombieAnimator.OnDeath();
                 _navMeshAgent.speed = 0f;
+                _zombieAudioSource.clip = _zombieDeathAudioClip;
+                _zombieAudioSource.Play();
                 StartCoroutine(ZombieFinisher());
             }
         }

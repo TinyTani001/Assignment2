@@ -15,4 +15,7 @@ MonoBehaviour:
   _playerHealth: 100
   _baseFireRate: 0.6
   _baseBulletDamage: 25
+  _baseBulletSound: {fileID: 8300000, guid: fedcaaf58e40cee47b93de298b06c1e1, type: 3}
+  _playerHitSound: {fileID: 8300000, guid: e7d9a3ae845cdc04ca33d5c2d435aa9b, type: 3}
+  _playerDeadSound: {fileID: 8300000, guid: 0722425973957824e875cc7fecaefe5f, type: 3}
   _gameUIData: {fileID: 11400000, guid: 5eb3f6ed7c220b14b9fbe3a784538123, type: 2}

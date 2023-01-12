@@ -5,9 +5,11 @@ public class DamageIncrease : UpgradeBase
 {
     [SerializeField] private int _damage;
     [SerializeField] private PlayerDataSO _playerData;
+    [SerializeField] private AudioClip _bulletSoundClip;
     public override void ActivateUpgrade()
     {
         _playerData.SetBulletDamage(_damage);
+        _playerData.SetBulletSound(_bulletSoundClip);
     }
 
     public override void DeactivateUpgrade()

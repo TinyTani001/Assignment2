@@ -9,15 +9,23 @@ public class Player : MonoBehaviour
     [SerializeField] private GameObject _bulletPrefab;
     [SerializeField] private Transform _bulletSpawnPosition, _meshTransform;
     [SerializeField] private PlayerDataSO _playerData;
+    [SerializeField] private AudioSource _bulletSoundAudio, _playerAudio;
 
     private float _bulletFireTime;
 
     private void Awake()
     {
-        _playerData.BaseBulletSpawnPattern += (bulletObject, bulletSpawnPoint, playerAimRotation)=>
+        _playerData.BaseBulletSpawnPattern += (bulletObject, bulletSpawnPoint, playerAimRotation) =>
         {
             Instantiate(bulletObject, _bulletSpawnPosition.position, playerAimRotation);
         };
+
+        _playerData.OnPlayerDead += () =>
+        {
+            _playerAudio.clip = _playerData.PlayerDeadSound;
+            _playerAudio.Play();
+        };
+
         _playerData.InitializeData();
     }
 
@@ -42,14 +50,17 @@ public class Player : MonoBehaviour
             Vector3 flatPlayerPosition = transform.position;
             flatPlayerPosition.y = _inputManager.MousePosition.y;
             Vector3 delta = _inputManager.MousePosition - flatPlayerPosition;
-            if(delta.sqrMagnitude > 0.01f)
+            if (delta.sqrMagnitude > 0.01f)
             {
                 _meshTransform.localRotation = Quaternion.LookRotation(delta);
             }
             _playerData.SetLocomotionAnimationDirection(_meshTransform.InverseTransformDirection(_inputManager.LocomotionInputValues));
-            if (Time.time > _bulletFireTime) {
+            if (Time.time > _bulletFireTime)
+            {
                 _bulletFireTime = Time.time + _playerData.FireRate;
                 _playerData.SpawnBullet.Invoke(_bulletPrefab, _bulletSpawnPosition.position, _meshTransform.rotation);
+                _bulletSoundAudio.clip = _playerData.BulletSound;
+                _bulletSoundAudio.Play();
             }
         }
     }
@@ -63,11 +74,14 @@ public class Player : MonoBehaviour
     {
         if (_playerData.IsPlayerDead) return;
         _playerData.DamagePlayer(30);
+        if (_playerData.IsPlayerDead) return;
+        _playerAudio.clip = _playerData.PlayerHitSound;
+        _playerAudio.Play();
     }
 
     IEnumerator InitializePlayerStatUI()
     {
-        yield return new WaitUntil(()=>_playerData.GameUIData.OnHealthUpdated != null);
+        yield return new WaitUntil(() => _playerData.GameUIData.OnHealthUpdated != null);
         _playerData.GameUIData.OnHealthUpdated.Invoke(_playerData.CurrentPlayerHealth);
         _playerData.GameUIData.OnDamageUpdated.Invoke(_playerData.BulletDamage);
         _playerData.GameUIData.OnFireRateUpdated.Invoke(_playerData.FireRate);

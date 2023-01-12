@@ -1,18 +1,23 @@
 using System;
+using System.Collections;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class GameUIManager : MonoBehaviour
 {
     [SerializeField] private GameUIDataSO _gameUIData;
     [SerializeField] private UpgradeCollectibleDataSO _upgradeCollectibeData;
+    [SerializeField] private PlayerDataSO _playerData;
     [SerializeField] private Slider _upgradeBarImage;
     [SerializeField] private Transform _starRingTransform;
     [SerializeField] private TMP_Text _playerHealthText, _bulletDamageText, _fireRateText;
-    [SerializeField] private GameObject _activeAbilityCover;
-    [SerializeField] private Image _activeAbilityIcon;
+    [SerializeField] private GameObject _activeAbilityCover, _resultScreen;
+    [SerializeField] private Sprite _winSprite, _looseSprite;
+    [SerializeField] private Image _activeAbilityIcon, _resultScreenMessageImage;
     [SerializeField] private AbilitiesUIElementData[] _abilitiesUIElements;
+    [SerializeField] private GameObject[] _uiToDisableOnPlayerDeath;
 
     private float _lastTick;
     private int _secondsPassed, _activeUpgradeIndex;
@@ -26,6 +31,17 @@ public class GameUIManager : MonoBehaviour
             {
                 _upgradeBarImage.value = 0f;
             }
+        };
+
+        _playerData.OnPlayerDead += () =>
+        {
+            _resultScreenMessageImage.sprite = _looseSprite;
+            _lastTick = 0f;
+            foreach (GameObject uiItem in _uiToDisableOnPlayerDeath)
+            {
+                uiItem.SetActive(false);
+            }
+            StartCoroutine(ShowResultScreen());
         };
 
         _upgradeCollectibeData.OnUpgradeCollected += (index, upgrade) =>
@@ -42,7 +58,7 @@ public class GameUIManager : MonoBehaviour
 
     private void Update()
     {
-        if(Time.time > _lastTick)
+        if(_lastTick > 0f && Time.time > _lastTick)
         {
             _lastTick = Time.time + 1f;
             _secondsPassed++;
@@ -65,6 +81,17 @@ public class GameUIManager : MonoBehaviour
     private void OnDestroy()
     {
         _gameUIData.ClearResources();
+    }
+
+    public void RestartLevel()
+    {
+        SceneManager.LoadScene(1);
+    }
+
+    IEnumerator ShowResultScreen()
+    {
+        yield return new WaitForSeconds(_gameUIData.ResultScreenDelay);
+        _resultScreen.SetActive(true);
     }
 
     [Serializable]

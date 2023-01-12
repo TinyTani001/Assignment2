@@ -7,6 +7,7 @@ public class PlayerDataSO : ScriptableObject
     [SerializeField, Min(0)] private int _playerHealth = 100;
     [SerializeField, Min(0f)] private float _baseFireRate = 0.6f;
     [SerializeField, Min(0)] private int _baseBulletDamage = 25;
+    [SerializeField] private AudioClip _baseBulletSound, _playerHitSound, _playerDeadSound;
     [SerializeField] private GameUIDataSO _gameUIData;
 
     public Action OnPlayerDead;
@@ -25,6 +26,10 @@ public class PlayerDataSO : ScriptableObject
 
     public int BulletDamage { get; private set; }
 
+    public AudioClip BulletSound { get; private set; }
+    public AudioClip PlayerHitSound => _playerHitSound;
+    public AudioClip PlayerDeadSound => _playerDeadSound;
+
     public bool CanShoot { get; set; }
 
     public Vector3 LocomotionAnimationDirection { get; private set; }
@@ -40,6 +45,7 @@ public class PlayerDataSO : ScriptableObject
         BulletDamage = _baseBulletDamage;
         CanShoot = true;
         SpawnBullet = BaseBulletSpawnPattern;
+        BulletSound = _baseBulletSound;
     }
 
     public void DamagePlayer(int damageAmount)
@@ -70,6 +76,8 @@ public class PlayerDataSO : ScriptableObject
         _gameUIData.OnDamageUpdated?.Invoke(BulletDamage);
     }
 
+    public void SetBulletSound(AudioClip soundClip) => BulletSound = soundClip;
+
     public void SetBulletSpawnPattern(Action<GameObject, Vector3, Quaternion> Pattern)
     {
         SpawnBullet = Pattern;
@@ -86,6 +94,7 @@ public class PlayerDataSO : ScriptableObject
         CanShoot = true;
         SpawnBullet = BaseBulletSpawnPattern;
         _isInvisible = false;
+        BulletSound = _baseBulletSound;
     }
 
     public void ResetData()
