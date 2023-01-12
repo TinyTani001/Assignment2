@@ -11,6 +11,8 @@ public class PlayerDataSO : ScriptableObject
 
     public Action OnPlayerDead;
     public Action<int> OnPlayerTookDamage;
+    public Action<GameObject, Vector3, Quaternion> BaseBulletSpawnPattern, SpawnBullet;
+
 
     public bool IsPlayerDead { get; private set; }
 
@@ -22,6 +24,8 @@ public class PlayerDataSO : ScriptableObject
 
     public int BulletDamage { get; private set; }
 
+    public bool CanShoot { get; set; }
+
     public Vector3 LocomotionAnimationDirection { get; private set; }
 
     public GameUIDataSO GameUIData => _gameUIData;
@@ -31,6 +35,8 @@ public class PlayerDataSO : ScriptableObject
         CurrentPlayerHealth = _playerHealth;
         FireRate = _baseFireRate;
         BulletDamage = _baseBulletDamage;
+        CanShoot = true;
+        SpawnBullet = BaseBulletSpawnPattern;
     }
 
     public void DamagePlayer(int damageAmount)
@@ -61,18 +67,27 @@ public class PlayerDataSO : ScriptableObject
         _gameUIData.OnDamageUpdated?.Invoke(BulletDamage);
     }
 
+    public void SetBulletSpawnPattern(Action<GameObject, Vector3, Quaternion> Pattern)
+    {
+        SpawnBullet = Pattern;
+    }
+
     public void ResetUpgradables()
     {
         FireRate = _baseFireRate;
         BulletDamage = _baseBulletDamage;
         _gameUIData.OnFireRateUpdated?.Invoke(FireRate);
         _gameUIData.OnDamageUpdated?.Invoke(BulletDamage);
+        CanShoot = true;
+        SpawnBullet = BaseBulletSpawnPattern;
     }
 
     public void ResetData()
     {
         OnPlayerDead = null;
         OnPlayerTookDamage = null;
+        BaseBulletSpawnPattern = null;
+        SpawnBullet = null;
         IsPlayerDead = false;
         Player = null;
         LocomotionAnimationDirection = Vector3.zero;

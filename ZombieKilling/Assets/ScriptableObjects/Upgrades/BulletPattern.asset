@@ -12,3 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c5e271afdc50ac144b1df6cac4fd2945, type: 3}
   m_Name: BulletPattern
   m_EditorClassIdentifier: 
+  _decreaseBulletSpawnArcByAngle: 60
+  _playerData: {fileID: 11400000, guid: fd2a0ae5903cb494fab6dd4e9af9ca36, type: 2}

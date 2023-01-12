@@ -79,6 +79,7 @@ MonoBehaviour:
   _rigidbody: {fileID: 1956615579081558404}
   _bulletLifeTime: 3
   _bulletSpeed: 1.6
+  _playerData: {fileID: 11400000, guid: fd2a0ae5903cb494fab6dd4e9af9ca36, type: 2}
 --- !u!1 &1956615579617301697
 GameObject:
   m_ObjectHideFlags: 0

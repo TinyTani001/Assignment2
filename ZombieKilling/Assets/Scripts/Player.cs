@@ -14,6 +14,10 @@ public class Player : MonoBehaviour
 
     private void Awake()
     {
+        _playerData.BaseBulletSpawnPattern += (bulletObject, bulletSpawnPoint, playerAimRotation)=>
+        {
+            Instantiate(bulletObject, _bulletSpawnPosition.position, playerAimRotation);
+        };
         _playerData.InitializeData();
     }
 
@@ -45,7 +49,7 @@ public class Player : MonoBehaviour
             _playerData.SetLocomotionAnimationDirection(_meshTransform.InverseTransformDirection(_inputManager.LocomotionInputValues));
             if (Time.time > _bulletFireTime) {
                 _bulletFireTime = Time.time + _playerData.FireRate;
-                Instantiate(_bulletPrefab, _bulletSpawnPosition.position, _meshTransform.rotation);
+                _playerData.SpawnBullet.Invoke(_bulletPrefab, _bulletSpawnPosition.position, _meshTransform.rotation);
             }
         }
     }
