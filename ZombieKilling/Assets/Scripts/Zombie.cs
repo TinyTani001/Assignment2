@@ -36,7 +36,7 @@ public class Zombie : MonoBehaviour
         {
             EvaluateAgentState();
 
-            if (_playerData.IsPlayerDead) return;
+            if (!_playerData.CanZombieDetectPlayer) return;
 
             Vector3 zombiePosition = transform.position;
 
@@ -168,10 +168,10 @@ public class Zombie : MonoBehaviour
     {
         _navMeshAgent.SetDestination(_playerData.Player.transform.position);
         float reRouteTime = Time.time + (!_chasingPlayer ? Random.Range(_minMaxRerouteTime.x, _minMaxRerouteTime.y) : 1f);
-        yield return new WaitUntil(() => (Time.time > reRouteTime || _playerData.IsPlayerDead || _isDead) && !_isHandlingBulletHit);
+        yield return new WaitUntil(() => (Time.time > reRouteTime || !_playerData.CanZombieDetectPlayer || _isDead) && !_isHandlingBulletHit);
         if (!_isDead)
         {
-            if (_playerData.IsPlayerDead)
+            if (!_playerData.CanZombieDetectPlayer)
             {
                 _chasingPlayer = false;
                 _playerInSight = false;
@@ -192,7 +192,11 @@ public class Zombie : MonoBehaviour
         yield return new WaitUntil(() => Time.time > reRouteTime || _isDead);
         if (!_isDead)
         {
-            StartCoroutine(TakeRandomPath());
+            if (!_playerData.CanZombieDetectPlayer)
+            {
+                StartCoroutine(TakeRandomPath());
+            }
+            else StartCoroutine(GotoPlayer());
         }
     }
 

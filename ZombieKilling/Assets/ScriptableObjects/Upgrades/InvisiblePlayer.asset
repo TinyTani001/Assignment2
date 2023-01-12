@@ -12,3 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3d70f7346f4f63b4c826a5293729a6f7, type: 3}
   m_Name: InvisiblePlayer
   m_EditorClassIdentifier: 
+  _playerData: {fileID: 11400000, guid: fd2a0ae5903cb494fab6dd4e9af9ca36, type: 2}

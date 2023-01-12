@@ -15,6 +15,7 @@ public class PlayerDataSO : ScriptableObject
 
 
     public bool IsPlayerDead { get; private set; }
+     public bool CanZombieDetectPlayer => !IsPlayerDead && !_isInvisible;
 
     public Player Player { get; set; }
 
@@ -29,6 +30,8 @@ public class PlayerDataSO : ScriptableObject
     public Vector3 LocomotionAnimationDirection { get; private set; }
 
     public GameUIDataSO GameUIData => _gameUIData;
+
+    [NonSerialized] private bool _isInvisible;
 
     public void InitializeData()
     {
@@ -72,6 +75,8 @@ public class PlayerDataSO : ScriptableObject
         SpawnBullet = Pattern;
     }
 
+    public void MakePlayerInvisible() => _isInvisible = true;
+
     public void ResetUpgradables()
     {
         FireRate = _baseFireRate;
@@ -80,6 +85,7 @@ public class PlayerDataSO : ScriptableObject
         _gameUIData.OnDamageUpdated?.Invoke(BulletDamage);
         CanShoot = true;
         SpawnBullet = BaseBulletSpawnPattern;
+        _isInvisible = false;
     }
 
     public void ResetData()
@@ -89,6 +95,7 @@ public class PlayerDataSO : ScriptableObject
         BaseBulletSpawnPattern = null;
         SpawnBullet = null;
         IsPlayerDead = false;
+        _isInvisible= false;
         Player = null;
         LocomotionAnimationDirection = Vector3.zero;
     }

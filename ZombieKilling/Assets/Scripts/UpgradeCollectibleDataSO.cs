@@ -27,16 +27,17 @@ public class UpgradeCollectibleDataSO : ScriptableObject
             int index = UnityEngine.Random.Range(0, max);
             UpgradeBase upgradeCollected = _upgradeList[_remainingUpgradesToCollect[index]];
             _collectedUpgrades[_remainingUpgradesToCollect[index]] = upgradeCollected;
-            OnUpgradeCollected?.Invoke(index, upgradeCollected);
+            OnUpgradeCollected?.Invoke(_remainingUpgradesToCollect[index], upgradeCollected);
             _remainingUpgradesToCollect.RemoveAt(index);
         }
     }
 
-    public void ActivateUpgradeOnIndex(int index)
+    public bool ActivateUpgradeOnIndex(int index)
     {
         if(_lastActiveUpgrade != null) _lastActiveUpgrade.DeactivateUpgrade();
         _lastActiveUpgrade = _collectedUpgrades[index];
         if(_lastActiveUpgrade != null) _lastActiveUpgrade.ActivateUpgrade();
+        return _lastActiveUpgrade != null;
     }
 
     public void AssignResources()
@@ -56,5 +57,6 @@ public class UpgradeCollectibleDataSO : ScriptableObject
         OnUpgradeCollected = null;
         _remainingUpgradesToCollect = null;
         _collectedUpgrades = null;
+        OnZombieKillPercentUpdated = null;
     }
 }
