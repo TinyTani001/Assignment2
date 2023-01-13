@@ -8,13 +8,27 @@ public class ZombieSpawnDataSO : ScriptableObject
     public GameObject ZombiePrefab;
 
     public Action<Vector3> OnZombieSpawnRequest;
+    public Action<int> OnZombieCountUpdated;
 
     private Queue<ZombieSpawnPoint> _zombieSpawnPoints;
+
+    public int RemainingZombiesCount
+    {
+        get => _remainingZombiesCount;
+        set
+        {
+            _remainingZombiesCount = value;
+            OnZombieCountUpdated?.Invoke(_remainingZombiesCount);
+        }
+    }
+
+    private int _remainingZombiesCount;
 
     public void ResetData()
     {
         _zombieSpawnPoints = null;
         OnZombieSpawnRequest = null;
+        _remainingZombiesCount = 0;
     }
 
     public void RegisterSpawnPoint(ZombieSpawnPoint point)

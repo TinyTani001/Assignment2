@@ -9,6 +9,7 @@ public class Player : MonoBehaviour
     [SerializeField] private GameObject _bulletPrefab;
     [SerializeField] private Transform _bulletSpawnPosition, _meshTransform;
     [SerializeField] private PlayerDataSO _playerData;
+    [SerializeField] private ZombieSpawnDataSO _zombieSpawnData;
     [SerializeField] private AudioSource _bulletSoundAudio, _playerAudio;
 
     private float _bulletFireTime;
@@ -26,6 +27,11 @@ public class Player : MonoBehaviour
             _playerAudio.Play();
         };
 
+        _zombieSpawnData.OnZombieCountUpdated += zombieCount =>
+        {
+            if (zombieCount == 0) _bulletFireTime = 0f;
+        };
+
         _playerData.InitializeData();
     }
 
@@ -40,12 +46,13 @@ public class Player : MonoBehaviour
     private void FixedUpdate()
     {
         if (_playerData.IsPlayerDead) return;
-        _characterMotor.Move(_inputManager.LocomotionInputValues);
+        if (_zombieSpawnData.RemainingZombiesCount > 0)
+            _characterMotor.Move(_inputManager.LocomotionInputValues);
     }
 
     private void Update()
     {
-        if (!_playerData.IsPlayerDead)
+        if (!_playerData.IsPlayerDead && _zombieSpawnData.RemainingZombiesCount > 0)
         {
             Vector3 flatPlayerPosition = transform.position;
             flatPlayerPosition.y = _inputManager.MousePosition.y;
@@ -55,7 +62,7 @@ public class Player : MonoBehaviour
                 _meshTransform.localRotation = Quaternion.LookRotation(delta);
             }
             _playerData.SetLocomotionAnimationDirection(_meshTransform.InverseTransformDirection(_inputManager.LocomotionInputValues));
-            if (Time.time > _bulletFireTime)
+            if (_bulletFireTime > 0f && Time.time > _bulletFireTime)
             {
                 _bulletFireTime = Time.time + _playerData.FireRate;
                 _playerData.SpawnBullet.Invoke(_bulletPrefab, _bulletSpawnPosition.position, _meshTransform.rotation);

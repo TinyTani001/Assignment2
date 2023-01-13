@@ -23,8 +23,10 @@ public class UpgradeCollectibeManager : MonoBehaviour
                 _upgradeCollectibeData.OnZombieKillPercentUpdated?.Invoke(Mathf.InverseLerp(0f, _upgradeCollectibeData.ZombieKillsToUpgrade, _currentZombieKillsToUpgrade));
                 if (_currentZombieKillsToUpgrade == _upgradeCollectibeData.ZombieKillsToUpgrade)
                 {
+                    int index = _upgradeCollectibeData.GetNewCollectibleIndex();
                     _currentZombieKillsToUpgrade = 0;
-                    Instantiate(_upgradeCollectiblePrefab, deathPosition + Vector3.up * 0.1f, Quaternion.identity);
+                    UpgradeCollectible collectible = Instantiate(_upgradeCollectiblePrefab, deathPosition + Vector3.up * 0.1f, Quaternion.identity).GetComponent<UpgradeCollectible>();
+                    collectible.SetUpgradeIndex(index);
                 }
             }
         };

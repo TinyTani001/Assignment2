@@ -256,7 +256,7 @@ MonoBehaviour:
   _timeToHoldPositionAfterKillingPlayer: 5
   _maxHealth: 100
   _minMaxRerouteTime: {x: 3, y: 7}
-  _playerDetectionRange: 0.114
+  _playerDetectionRange: 0.2
   _zombieMeshTransform: {fileID: 5931261613551232961}
   _playerData: {fileID: 11400000, guid: fd2a0ae5903cb494fab6dd4e9af9ca36, type: 2}
   _zombieSpawnData: {fileID: 11400000, guid: 8aecd3d84c8b59e4ca9d54c03e201a34, type: 2}

@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Runtime.InteropServices;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -9,6 +10,7 @@ public class GameUIManager : MonoBehaviour
 {
     [SerializeField] private GameUIDataSO _gameUIData;
     [SerializeField] private UpgradeCollectibleDataSO _upgradeCollectibeData;
+    [SerializeField] private ZombieSpawnDataSO _zombieSpawnData;
     [SerializeField] private PlayerDataSO _playerData;
     [SerializeField] private Slider _upgradeBarImage;
     [SerializeField] private Transform _starRingTransform;
@@ -17,7 +19,7 @@ public class GameUIManager : MonoBehaviour
     [SerializeField] private Sprite _winSprite, _looseSprite;
     [SerializeField] private Image _activeAbilityIcon, _resultScreenMessageImage;
     [SerializeField] private AbilitiesUIElementData[] _abilitiesUIElements;
-    [SerializeField] private GameObject[] _uiToDisableOnPlayerDeath;
+    [SerializeField] private GameObject[] _uiToDisableOnGameOver;
 
     private float _lastTick;
     private int _secondsPassed, _activeUpgradeIndex;
@@ -35,13 +37,15 @@ public class GameUIManager : MonoBehaviour
 
         _playerData.OnPlayerDead += () =>
         {
-            _resultScreenMessageImage.sprite = _looseSprite;
-            _lastTick = 0f;
-            foreach (GameObject uiItem in _uiToDisableOnPlayerDeath)
+            ShowResultScreen(_looseSprite);
+        };
+
+        _zombieSpawnData.OnZombieCountUpdated += zombieCount =>
+        {
+            if (zombieCount == 0)
             {
-                uiItem.SetActive(false);
+                ShowResultScreen(_winSprite);
             }
-            StartCoroutine(ShowResultScreen());
         };
 
         _upgradeCollectibeData.OnUpgradeCollected += (index, upgrade) =>
@@ -58,11 +62,11 @@ public class GameUIManager : MonoBehaviour
 
     private void Update()
     {
-        if(_lastTick > 0f && Time.time > _lastTick)
+        if (_lastTick > 0f && Time.time > _lastTick)
         {
             _lastTick = Time.time + 1f;
             _secondsPassed++;
-            if(_secondsPassed == 2)
+            if (_secondsPassed == 2)
             {
                 _secondsPassed = 0;
                 _activeUpgradeIndex = _activeUpgradeIndex - 1 < 0 ? 4 : _activeUpgradeIndex - 1;
@@ -86,6 +90,17 @@ public class GameUIManager : MonoBehaviour
     public void RestartLevel()
     {
         SceneManager.LoadScene(1);
+    }
+
+    private void ShowResultScreen(Sprite withSprite)
+    {
+        _resultScreenMessageImage.sprite = withSprite;
+        _lastTick = 0f;
+        foreach (GameObject uiItem in _uiToDisableOnGameOver)
+        {
+            uiItem.SetActive(false);
+        }
+        StartCoroutine(ShowResultScreen());
     }
 
     IEnumerator ShowResultScreen()

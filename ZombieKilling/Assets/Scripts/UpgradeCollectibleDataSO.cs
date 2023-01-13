@@ -13,31 +13,38 @@ public class UpgradeCollectibleDataSO : ScriptableObject
 
     public int ZombieKillsToUpgrade => _zombieKillsToUpgrade;
 
-    public bool CanDropUpgradeCollectible => _remainingUpgradesToCollect.Count> 0;
+    public bool CanDropUpgradeCollectible => _remainingUpgradesToCollect.Count > 0;
 
     [NonSerialized] private UpgradeBase[] _collectedUpgrades;
     [NonSerialized] private List<int> _remainingUpgradesToCollect;
     [NonSerialized] private UpgradeBase _lastActiveUpgrade;
 
-    public void UpgradeCollected()
+    public void UpgradeCollected(int index)
+    {
+        UpgradeBase upgradeCollected = _upgradeList[index];
+        _collectedUpgrades[index] = upgradeCollected;
+        OnUpgradeCollected?.Invoke(index, upgradeCollected);
+    }
+
+    public bool ActivateUpgradeOnIndex(int index)
+    {
+        if (_lastActiveUpgrade != null) _lastActiveUpgrade.DeactivateUpgrade();
+        _lastActiveUpgrade = _collectedUpgrades[index];
+        if (_lastActiveUpgrade != null) _lastActiveUpgrade.ActivateUpgrade();
+        return _lastActiveUpgrade != null;
+    }
+
+    public int GetNewCollectibleIndex()
     {
         int max = _remainingUpgradesToCollect.Count;
         if (max > 0)
         {
             int index = UnityEngine.Random.Range(0, max);
-            UpgradeBase upgradeCollected = _upgradeList[_remainingUpgradesToCollect[index]];
-            _collectedUpgrades[_remainingUpgradesToCollect[index]] = upgradeCollected;
-            OnUpgradeCollected?.Invoke(_remainingUpgradesToCollect[index], upgradeCollected);
+            int upgradeIndex = _remainingUpgradesToCollect[index];
             _remainingUpgradesToCollect.RemoveAt(index);
+            return upgradeIndex;
         }
-    }
-
-    public bool ActivateUpgradeOnIndex(int index)
-    {
-        if(_lastActiveUpgrade != null) _lastActiveUpgrade.DeactivateUpgrade();
-        _lastActiveUpgrade = _collectedUpgrades[index];
-        if(_lastActiveUpgrade != null) _lastActiveUpgrade.ActivateUpgrade();
-        return _lastActiveUpgrade != null;
+        return -1;
     }
 
     public void AssignResources()

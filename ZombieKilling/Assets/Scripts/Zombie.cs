@@ -30,6 +30,7 @@ public class Zombie : MonoBehaviour
         _currentHealth = _maxHealth;
         _navMeshAgent.speed = _walkSpeed;
         _playerDetectionDotProduct = Vector3.Dot(transform.forward, Quaternion.AngleAxis(Mathf.Lerp(0f, 180f, _playerDetectionRange), Vector3.up) * transform.forward);
+        _zombieSpawnData.RemainingZombiesCount++;
     }
 
     private void FixedUpdate()
@@ -206,6 +207,7 @@ public class Zombie : MonoBehaviour
 
     IEnumerator ZombieFinisher()
     {
+        _zombieSpawnData.RemainingZombiesCount--;
         _zombieSpawnData.RequestZombieSpawn(transform.position);
         yield return new WaitForSeconds(3f);
         Vector3 finalPosition = Vector3.down * 5f;

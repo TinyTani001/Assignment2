@@ -6,9 +6,12 @@ public class Bullet : MonoBehaviour
     [SerializeField] private float _bulletLifeTime, _bulletSpeed;
     [SerializeField] private PlayerDataSO _playerData;
 
+    private int _damage;
+
     private void Start()
     {
         _bulletLifeTime = Time.time + _bulletLifeTime;
+        _damage = _playerData.BulletDamage;
     }
 
     private void FixedUpdate()
@@ -30,7 +33,7 @@ public class Bullet : MonoBehaviour
         {
             if (coll.gameObject.TryGetComponent(out Zombie zombie))
             {
-                if(!zombie.HitZombie(_playerData.BulletDamage)) Destroy(gameObject);
+                if(!zombie.HitZombie(_damage)) Destroy(gameObject);
             }
         }
     }
